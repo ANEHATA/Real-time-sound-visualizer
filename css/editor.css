@@ -1,0 +1,762 @@
+/* ================================================================
+ * SOUND TYPO Editor - スタイルシート
+ * ================================================================ */
+
+/* リセット */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ==================== ベースレイアウト ==================== */
+body {
+    background-color: #0A0A0A;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #FFFFFF;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
+
+#main-canvas-container {
+    --scene-font: 'Noto Sans JP', sans-serif;
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #0A0A0A;
+}
+
+.layer-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+}
+
+#flash-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 8;
+}
+
+/* ==================== CLICK TO START ==================== */
+#start-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    z-index: 20;
+    user-select: none;
+    touch-action: manipulation;
+}
+
+#start-screen .start-btn {
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.45);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.25em;
+    cursor: pointer;
+    padding: 20px 40px;
+    touch-action: manipulation;
+    pointer-events: none;
+}
+
+#start-screen .start-error {
+    font-size: 11px;
+    color: rgba(255,120,120,0.8);
+    letter-spacing: 0.1em;
+    display: none;
+    text-align: center;
+    max-width: 280px;
+    line-height: 1.6;
+}
+
+/* ==================== サイドバートグルボタン ==================== */
+#sidebar-toggle {
+    position: fixed;
+    top: 50%;
+    right: 280px;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 48px;
+    background: rgba(15, 15, 15, 0.95);
+    border: none;
+    border-left: 1px solid rgba(255,255,255,0.08);
+    color: rgba(255,255,255,0.4);
+    font-size: 9px;
+    cursor: pointer;
+    z-index: 200;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#sidebar-toggle:hover { color: #FFFFFF; }
+
+/* ==================== サイドバー ==================== */
+#sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background: rgba(15, 15, 15, 0.95);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.15s;
+}
+
+/* スクロールバー（細め） */
+#sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+#sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+#sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.2);
+    border-radius: 2px;
+}
+
+#sidebar-content {
+    width: 280px;
+    min-height: 100%;
+    padding-bottom: 40px;
+}
+
+/* ==================== アコーディオンセクション ==================== */
+.section {
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.sec-header {
+    padding: 10px 12px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sec-header:hover { color: rgba(255,255,255,0.75); }
+
+.sec-arrow {
+    font-size: 8px;
+    flex-shrink: 0;
+    transition: transform 0.15s;
+}
+
+/* 開いている時は▼、閉じている時は▶ */
+.section.open .sec-arrow { transform: rotate(90deg); }
+
+.sec-body {
+    padding: 4px 12px 12px;
+}
+
+.section:not(.open) .sec-body { display: none; }
+
+/* 全画面ボタン用セクション（ヘッダーなし） */
+.section-fullscreen {
+    padding: 12px;
+}
+
+/* ==================== デバッグ ==================== */
+.dbg-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    line-height: 1.7;
+}
+
+.dbg-lbl { color: rgba(255,255,255,0.3); font-size: 11px; }
+.dbg-val { color: rgba(255,255,255,0.7); font-size: 11px; font-variant-numeric: tabular-nums; }
+
+.beat-dot {
+    display: inline-block;
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    margin-right: 3px;
+    vertical-align: middle;
+    transition: background 0.05s;
+}
+
+.beat-dot.lit { background: #FFFFFF; }
+
+/* ==================== シーンリスト（2列グリッド＋チェックボックス右上） ==================== */
+.scene-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+}
+
+.scene-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 8px 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: grab;
+    user-select: none;
+    border-radius: 2px;
+}
+
+.scene-item:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.scene-item.active {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.35);
+}
+
+.scene-item.active .scene-label {
+    color: #FFFFFF;
+}
+
+.scene-item.dragging {
+    opacity: 0.4;
+}
+
+/* シーン番号 */
+.scene-num {
+    font-size: 9px;
+    color: rgba(255,255,255,0.25);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    width: 12px;
+    text-align: center;
+}
+
+/* チェックボックス（右上に配置） */
+.scene-checkbox {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    border-radius: 2px;
+}
+
+.scene-checkbox:checked {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.6);
+}
+
+.scene-checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 1px; left: 3px;
+    width: 4px;
+    height: 6px;
+    border: solid #FFFFFF;
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+}
+
+.scene-label {
+    flex: 1;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.45);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-align: left;
+    padding: 2px 0;
+}
+
+.scene-label:hover {
+    color: #FFFFFF;
+}
+
+.scene-drag-handle {
+    color: rgba(255,255,255,0.2);
+    font-size: 10px;
+    cursor: grab;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.scene-drag-handle:hover {
+    color: rgba(255,255,255,0.5);
+}
+
+/* ==================== 汎用ボタン・レイアウト ==================== */
+.row2 { display: flex; gap: 5px; margin-bottom: 5px; }
+.row1 { display: flex; }
+.input-btn-row { display: flex; gap: 5px; }
+.mt4  { margin-top: 4px; }
+.mt8  { margin-top: 8px; }
+
+.tog-btn {
+    flex: 1;
+    padding: 7px 4px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.45);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 2px;
+}
+
+.tog-btn:hover { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+
+.tog-btn.active {
+    background: rgba(255,255,255,0.15);
+    color: #FFFFFF;
+    border-color: rgba(255,255,255,0.35);
+}
+
+/* テキスト入力 */
+.field-label {
+    display: block;
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.15em;
+    margin-bottom: 4px;
+}
+
+.field-text {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #FFFFFF;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    padding: 6px 8px;
+    outline: none;
+    letter-spacing: 0.05em;
+    margin-bottom: 0;
+    border-radius: 2px;
+}
+
+.field-text:focus { border-color: rgba(255,255,255,0.35); }
+.field-text::placeholder { color: rgba(255,255,255,0.2); }
+
+/* フォント選択ドロップダウン */
+.field-select {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #FFFFFF;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px;
+    padding: 6px 8px;
+    outline: none;
+    cursor: pointer;
+    margin-bottom: 0;
+    border-radius: 2px;
+}
+
+.field-select:focus { border-color: rgba(255,255,255,0.35); }
+
+.field-select option {
+    background: #1a1a1a;
+    color: #FFFFFF;
+}
+
+/* ==================== MIDI ==================== */
+.midi-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.08em;
+}
+
+.midi-dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255,80,80,0.6);
+    flex-shrink: 0;
+}
+
+.midi-dot.connected {
+    background: rgba(80,255,120,0.8);
+}
+
+.midi-monitor {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    font-family: monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.05em;
+    padding: 6px 8px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 2px;
+    min-height: 24px;
+}
+
+/* ==================== エフェクト（リスト形式＋強度スライダー） ==================== */
+.effect-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.eff-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.eff-btn {
+    position: relative;
+    width: 78px;
+    flex-shrink: 0;
+    padding: 5px 4px 5px 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.4);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 8px;
+    cursor: pointer;
+    text-align: left;
+    line-height: 1.4;
+    border-radius: 2px;
+    white-space: nowrap;
+}
+
+.eff-btn:hover { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+
+.eff-btn.active {
+    background: rgba(255,255,255,0.15);
+    color: #FFFFFF;
+    border-color: rgba(255,255,255,0.35);
+}
+
+.eff-key {
+    font-size: 9px;
+    font-weight: 700;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0;
+    margin-left: 4px;
+}
+
+.eff-btn.active .eff-key {
+    color: rgba(255,255,255,0.5);
+}
+
+.eff-intensity {
+    flex: 1;
+    min-width: 0;
+}
+
+.eff-intensity-val {
+    width: 24px;
+    flex-shrink: 0;
+    text-align: right;
+    font-size: 9px;
+    color: rgba(255,255,255,0.4);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ==================== 全画面ボタン ==================== */
+.full-btn {
+    width: 100%;
+    padding: 9px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.45);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.full-btn:hover { background: rgba(255,255,255,0.08); color: #FFFFFF; }
+
+/* ==================== スライダー ==================== */
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.slider-label {
+    font-size: 10px;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.slider-val {
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    flex-shrink: 0;
+    min-width: 28px;
+    text-align: right;
+}
+
+input[type="range"].st-range {
+    -webkit-appearance: none;
+    flex: 1;
+    height: 2px;
+    background: rgba(255,255,255,0.2);
+    outline: none;
+    cursor: pointer;
+    border-radius: 1px;
+}
+
+input[type="range"].st-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    cursor: pointer;
+}
+
+/* ==================== CENTER シーン DOM要素 ==================== */
+#mainTextWrapper {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 5;
+    pointer-events: none;
+    display: none;
+}
+
+#textTransform {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform-origin: center center;
+}
+
+#mainText {
+    font-family: var(--scene-font, 'Noto Sans JP', sans-serif);
+    color: #FFFFFF;
+    white-space: nowrap;
+    display: block;
+    transform-origin: center center;
+}
+
+.ghost-el {
+    position: absolute;
+    top: 50%; left: 50%;
+    font-family: var(--scene-font, 'Noto Sans JP', sans-serif);
+    color: #FFFFFF;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    z-index: 3;
+    display: none;
+}
+
+#blastWrapper {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 4;
+    display: none;
+}
+
+#blastTransform {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform-origin: center center;
+}
+
+#blastText {
+    font-family: var(--scene-font, 'Noto Sans JP', sans-serif);
+    color: #FFFFFF;
+    white-space: nowrap;
+    display: block;
+    transform-origin: center center;
+}
+
+/* ==================== アニメーション ==================== */
+@keyframes shake {
+    0%   { transform: translateX(0px); }
+    25%  { transform: translateX(2px); }
+    75%  { transform: translateX(-2px); }
+    100% { transform: translateX(0px); }
+}
+
+.shaking { animation: shake 0.05s infinite; }
+
+/* ==================== キャプチャ ==================== */
+.section-capture {
+    padding: 12px;
+}
+
+.capture-button {
+    width: 100%;
+    padding: 9px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.45);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.capture-button:hover {
+    background: rgba(255,255,255,0.08);
+    color: #FFFFFF;
+}
+
+.capture-button:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.video-capture-button {
+    margin-top: 6px;
+}
+
+.capture-status {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+    margin-top: 4px;
+    min-height: 16px;
+}
+
+/* ==================== QRオーバーレイ ==================== */
+#qr-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.qr-card {
+    position: relative;
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    max-width: 320px;
+}
+
+.qr-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+}
+
+.qr-close:hover {
+    color: #000;
+}
+
+#qr-code {
+    width: 200px;
+    height: 200px;
+}
+
+.qr-message {
+    color: #333;
+    font-size: 13px;
+    text-align: center;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.qr-filename {
+    color: #888;
+    font-size: 11px;
+    font-family: monospace;
+    margin: 0;
+}
+
+/* ==================== マッピングセクション ==================== */
+.mapping-scene-name {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: rgba(255,255,255,0.85);
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.mapping-target-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3px 0;
+    font-size: 10px;
+}
+
+.mapping-target-val {
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    text-align: right;
+}
+
+/* シーンマッピングドロップダウン */
+.mapping-target-select {
+    flex: 1;
+    max-width: 170px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #FFFFFF;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 10px;
+    padding: 4px 6px;
+    outline: none;
+    cursor: pointer;
+    border-radius: 2px;
+    letter-spacing: 0.03em;
+}
+
+.mapping-target-select:focus {
+    border-color: rgba(255,255,255,0.35);
+}
+
+.mapping-target-select option {
+    background: #1a1a1a;
+    color: #FFFFFF;
+}
